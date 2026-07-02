@@ -26,4 +26,16 @@ function register_user($username, $password, $email, $fullname = "", $address = 
     $stmt->bindParam(':tel', $tel);
     return $stmt->execute();
 }
+
+function update_user_info($id, $fullname, $email, $tel, $address) {
+    $conn = connectdb();
+    $sql = "UPDATE users SET fullname = :fullname, email = :email, tel = :tel, address = :address WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':fullname', $fullname);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':tel', $tel);
+    $stmt->bindParam(':address', $address);
+    $stmt->bindParam(':id', $id);
+    return $stmt->execute();
+}
 ?>

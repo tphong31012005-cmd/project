@@ -9,6 +9,13 @@
     </a>
 </div>
 
+<?php if(isset($_GET['error']) && $_GET['error'] == 'cannot_delete_product'): ?>
+<div style="margin-bottom:16px; padding:14px 18px; background:rgba(239,68,68,0.12); border:1px solid var(--danger); border-radius:var(--radius-md); color:var(--danger); display:flex; align-items:center; gap:10px;">
+    <i class="fas fa-ban"></i>
+    <span>Không thể xóa sản phẩm. Chức năng này đã bị vô hiệu hóa để bảo vệ dữ liệu.</span>
+</div>
+<?php endif; ?>
+
 <!-- Products Table -->
 <div class="panel">
     <div class="panel-header">
@@ -22,6 +29,7 @@
                     <th>Hình ảnh</th>
                     <th>Tên sản phẩm</th>
                     <th>Giá</th>
+                    <th>Số lượng</th>
                     <th>Danh mục</th>
                     <th style="text-align:right;">Thao tác</th>
                 </tr>
@@ -40,7 +48,10 @@
                         </span>
                     </td>
                     <td>
-                        <span style="font-weight:700; color:var(--accent-light);">$<?= number_format($p['price'], 2) ?></span>
+                        <span style="font-weight:700; color:var(--accent-light);"><?= number_format($p['price'], 0, ',', '.') ?> đ</span>
+                    </td>
+                    <td>
+                        <span style="font-weight:600; color:var(--text-secondary);"><?= $p['quantity'] ?></span>
                     </td>
                     <td><span class="badge-custom badge-cat"><?= htmlspecialchars($p['cat_name']) ?></span></td>
                     <td style="text-align:right;">
@@ -48,10 +59,9 @@
                             <a href="index.php?act=editproduct&id=<?= $p['id'] ?>" class="btn-edit-custom">
                                 <i class="fas fa-pen"></i> Sửa
                             </a>
-                            <a href="index.php?act=delproduct&id=<?= $p['id'] ?>" class="btn-danger-custom"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
-                                <i class="fas fa-trash"></i> Xóa
-                            </a>
+                            <span style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:4px;" title="Chức năng xóa đã bị vô hiệu hóa">
+                                <i class="fas fa-lock"></i> Không thể xóa
+                            </span>
                         </div>
                     </td>
                 </tr>

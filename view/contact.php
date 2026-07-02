@@ -75,7 +75,7 @@
                                     </div>
                                     <div>
                                         <h3 class="h5">Địa chỉ</h3>
-                                        <p class="text-muted"> Số 123, Đường Láng, Đống Đa<br>Hà Nội, Việt Nam<br><strong>Việt Nam</strong></p>
+                                        <p class="text-muted"> Số 191, đường Trần Văn Kiểu, Hồ Chí Minh<br><strong>Việt Nam</strong></p>
                                     </div>
                                 </li>
                                 <li class="d-flex mb-3">
@@ -85,8 +85,9 @@
                                     <div>
                                         <h3 class="h5">Tổng đài hỗ trợ</h3>
                                         <ul class="list-unstyled text-muted">
-                                            <li>0123 456 789</li>
-                                            <li>0987 654 321</li>
+                                            <li>0866462647</li>
+                                            <li>09 1234 5678
+                                            </li>
                                         </ul>
                                     </div>
                                 </li>

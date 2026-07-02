@@ -2,6 +2,9 @@
 CREATE DATABASE IF NOT EXISTS WindyStore CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE WindyStore;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+
 -- Drop existing tables to ensure a clean slate
 DROP TABLE IF EXISTS cart;
 DROP TABLE IF EXISTS products;
@@ -21,12 +24,13 @@ CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     img VARCHAR(255),
-    price DECIMAL(10, 2) NOT NULL,
-    old_price DECIMAL(10, 2),
+    price DECIMAL(15, 2) NOT NULL,
+    old_price DECIMAL(15, 2),
     description TEXT,
     view INT DEFAULT 0,
     category_id INT,
     status TINYINT(1) DEFAULT 1,
+    quantity INT NOT NULL DEFAULT 50,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 );
 
@@ -49,7 +53,7 @@ CREATE TABLE cart (
     user_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
-    price DECIMAL(10, 2) NOT NULL,
+    price DECIMAL(15, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -57,44 +61,44 @@ CREATE TABLE cart (
 
 -- Insert categories
 INSERT INTO categories (id, name, img, status) VALUES
-(1, 'Phụ kiện Laptop', 'assets/images/category/category-02.webp', 1),
+(1, 'Phụ kiện Laptop', 'assets/images/category/4.png', 1),
 (2, 'Phụ kiện điện thoại', 'assets/images/category/category-01.webp', 1),
-(3, 'Phụ kiện máy ảnh', 'assets/images/category/category-04.webp', 1),
-(4, 'Trò chơi', 'assets/images/category/category-08.webp', 1),
+(3, 'Phụ kiện máy ảnh', 'assets/images/category/1.png', 1),
+(4, 'Trò chơi', 'assets/images/category/category-05.avif', 1),
 (5, 'Thiết bị đeo thông minh', 'assets/images/category/6.png', 1),
 (6, 'Nhà thông minh', 'assets/images/category/category-06.webp', 1),
 (7, 'Máy tính bảng', 'assets/images/category/category-07.webp', 1),
-(8, 'Chuột', 'assets/images/category/category-02.webp', 1),
-(9, 'Bàn phím', 'assets/images/category/category-02.webp', 1),
-(10, 'USB', 'assets/images/category/category-02.webp', 1),
-(11, 'Thẻ nhớ', 'assets/images/category/category-02.webp', 1),
-(12, 'Router', 'assets/images/category/category-02.webp', 1),
-(13, 'Pin', 'assets/images/category/category-02.webp', 1),
-(14, 'Bộ sạc', 'assets/images/category/category-02.webp', 1),
-(15, 'Bộ lưu điện (UPS)', 'assets/images/category/category-02.webp', 1),
+(8, 'Chuột', 'assets/images/category/2.png', 1),
+(9, 'Bàn phím', 'assets/images/category/category-03.webp', 1),
+(10, 'USB', 'assets/images/category/category-10.webp', 1),
+(11, 'Thẻ nhớ', 'assets/images/category/category-11.avif', 1),
+(12, 'Router', 'assets/images/category/5.png', 1),
+(13, 'Pin', 'assets/images/category/category-09.webp', 1),
+(14, 'Bộ sạc', 'assets/images/category/category-08.webp', 1),
+(15, 'Bộ lưu điện (UPS)', 'assets/images/category/category-12.webp', 1),
 (16, 'Kính cường lực', 'assets/images/category/category-01.webp', 1),
 (17, 'Ốp lưng', 'assets/images/category/category-01.webp', 1),
 (18, 'Cáp sạc', 'assets/images/category/category-01.webp', 1),
 (19, 'Củ sạc', 'assets/images/category/category-01.webp', 1),
-(20, 'Ống kính rời', 'assets/images/category/category-01.webp', 1),
-(21, 'Đèn Flash', 'assets/images/category/category-01.webp', 1),
-(22, 'Sạc dự phòng', 'assets/images/category/category-01.webp', 1),
+(20, 'Ống kính rời', 'assets/images/category/1.png', 1),
+(21, 'Đèn Flash', 'assets/images/category/category-04.webp', 1),
+(22, 'Sạc dự phòng', 'assets/images/category/category-02.webp', 1),
 (23, 'OTG USB', 'assets/images/category/category-01.webp', 1),
 (24, 'Máy ảnh lấy liền', 'assets/images/category/category-04.webp', 1),
-(25, 'Flycam', 'assets/images/category/category-04.webp', 1),
+(25, 'Flycam', 'assets/images/category/category-05.avif', 1),
 (26, 'DSLR', 'assets/images/category/category-04.webp', 1),
 (27, 'Action Cam', 'assets/images/category/category-04.webp', 1),
-(28, 'Ống kính', 'assets/images/category/category-04.webp', 1),
-(29, 'Chân máy', 'assets/images/category/category-04.webp', 1),
+(28, 'Ống kính', 'assets/images/category/1.png', 1),
+(29, 'Chân máy', 'assets/images/category/category-03.webp', 1),
 (30, 'Máy ảnh du lịch', 'assets/images/category/category-04.webp', 1),
-(31, 'Tai nghe', 'assets/images/category/category-03.webp', 1),
+(31, 'Tai nghe', 'assets/images/category/3.png', 1),
 (32, 'Loa', 'assets/images/category/7.png', 1),
 (33, 'Đồng hồ', 'assets/images/category/6.png', 1),
-(34, 'Thiết bị mạng', 'assets/images/category/category-02.webp', 1),
-(35, 'Màn hình', 'assets/images/category/category-02.webp', 1),
+(34, 'Thiết bị mạng', 'assets/images/category/5.png', 1),
+(35, 'Màn hình', 'assets/images/category/4.png', 1),
 (36, 'Linh kiện', 'assets/images/category/category-02.webp', 1),
 (37, 'Phần mềm', 'assets/images/category/category-02.webp', 1),
-(38, 'Dịch vụ', 'assets/images/category/category-02.webp', 1);
+(38, 'Dịch vụ', 'assets/images/category/special-offer.png', 1);
 
 -- Insert products (including 100 generated products with real image paths)
 INSERT INTO products (id, name, img, price, old_price, description, view, category_id, status) VALUES
@@ -376,3 +380,33 @@ INSERT INTO products (id, name, img, price, old_price, description, view, catego
 -- Insert users
 INSERT INTO users (id, username, password, email, fullname, address, tel, role) VALUES
 (1, 'admin', '$2y$10$RTT/aO0iKeQAY83g8gjUhuPrZ3ycVoWTOOwhfUwQfC5a8CWUCpT.O', 'admin@WindyStore.com', 'Administrator', NULL, NULL, 1);
+
+-- Create bill table
+CREATE TABLE IF NOT EXISTS bill (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bill_code VARCHAR(50) NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    fullname VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    tel VARCHAR(20) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    note TEXT,
+    total_price DECIMAL(15, 2) NOT NULL,
+    payment_method TINYINT NOT NULL DEFAULT 0, -- 0: COD, 1: Bank Transfer
+    status TINYINT NOT NULL DEFAULT 0, -- 0: Chờ xác nhận, 1: Đang chuẩn bị, 2: Đang giao, 3: Đã giao, 4: Đã hủy
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create bill_details table
+CREATE TABLE IF NOT EXISTS bill_details (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bill_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    price DECIMAL(15, 2) NOT NULL,
+    FOREIGN KEY (bill_id) REFERENCES bill(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+SET FOREIGN_KEY_CHECKS = 1;

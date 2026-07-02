@@ -15,6 +15,12 @@
             <span class="panel-title"><i class="fas fa-plus" style="color:var(--accent-light); margin-right:8px;"></i>Thông tin sản phẩm</span>
         </div>
         <div class="panel-body">
+            <?php if(isset($error_msg) && $error_msg != ""): ?>
+            <div style="background:#fce8e6; color:#a51d24; border:1px solid #f5c2c7; padding:12px; border-radius:8px; margin-bottom:20px; font-weight:500;">
+                <i class="fas fa-exclamation-triangle" style="margin-right:8px;"></i><?= htmlspecialchars($error_msg) ?>
+            </div>
+            <?php endif; ?>
+
             <form action="index.php?act=addproduct" method="post" enctype="multipart/form-data">
 
                 <div class="form-group">
@@ -24,13 +30,18 @@
 
                 <div class="row-2">
                     <div class="form-group">
-                        <label class="form-label-custom">Giá bán ($) <span style="color:var(--danger);">*</span></label>
-                        <input type="number" step="0.01" class="form-control-custom" name="price" placeholder="0.00" required>
+                        <label class="form-label-custom">Giá bán (VNĐ) <span style="color:var(--danger);">*</span></label>
+                        <input type="number" min="0" step="1" class="form-control-custom" name="price" placeholder="Nhập giá bán..." required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label-custom">Giá gốc ($)</label>
-                        <input type="number" step="0.01" class="form-control-custom" name="old_price" placeholder="0.00">
+                        <label class="form-label-custom">Giá gốc (VNĐ)</label>
+                        <input type="number" min="0" step="1" class="form-control-custom" name="old_price" placeholder="Nhập giá gốc...">
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label-custom">Số lượng tồn kho <span style="color:var(--danger);">*</span></label>
+                    <input type="number" min="0" step="1" class="form-control-custom" name="quantity" placeholder="Nhập số lượng..." value="50" required>
                 </div>
 
                 <div class="form-group">

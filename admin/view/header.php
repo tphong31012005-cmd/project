@@ -745,13 +745,29 @@
             </a>
 
             <span class="nav-section-label">Quản lý</span>
-            <a href="index.php?act=products" class="sidebar-link <?= isset($_GET['act']) && in_array($_GET['act'], ['products','addproduct','editproduct']) ? 'active' : '' ?>">
-                <span class="icon"><i class="fas fa-box"></i></span>
+            <a href="index.php?act=categories" class="sidebar-link <?= isset($_GET['act']) && in_array($_GET['act'], ['categories', 'addcategory', 'editcategory']) ? 'active' : '' ?>">
+                <span class="icon"><i class="fas fa-tags"></i></span>
+                Danh mục
+            </a>
+            <a href="index.php?act=products" class="sidebar-link <?= isset($_GET['act']) && in_array($_GET['act'], ['products', 'addproduct', 'editproduct']) ? 'active' : '' ?>">
+                <span class="icon"><i class="fas fa-box-open"></i></span>
                 Sản phẩm
             </a>
             <a href="index.php?act=users" class="sidebar-link <?= isset($_GET['act']) && $_GET['act'] == 'users' ? 'active' : '' ?>">
                 <span class="icon"><i class="fas fa-users"></i></span>
                 Người dùng
+            </a>
+            <a href="index.php?act=orders" class="sidebar-link <?= isset($_GET['act']) && in_array($_GET['act'], ['orders', 'order_detail']) ? 'active' : '' ?>">
+                <span class="icon"><i class="fas fa-file-invoice-dollar"></i></span>
+                Đơn hàng
+            </a>
+            <a href="index.php?act=reviews" class="sidebar-link <?= isset($_GET['act']) && in_array($_GET['act'], ['reviews']) ? 'active' : '' ?>">
+                <span class="icon"><i class="fas fa-star"></i></span>
+                Đánh giá
+            </a>
+            <a href="index.php?act=coupons" class="sidebar-link <?= isset($_GET['act']) && in_array($_GET['act'], ['coupons']) ? 'active' : '' ?>">
+                <span class="icon"><i class="fas fa-ticket-alt"></i></span>
+                Giảm giá
             </a>
 
             <div class="sidebar-divider"></div>
@@ -792,10 +808,15 @@
                 <span class="sep">/</span>
                 <?php
                 $acts = [
+                    'categories'  => 'Danh mục',
+                    'addcategory' => 'Thêm danh mục',
+                    'editcategory'=> 'Sửa danh mục',
                     'products'    => 'Sản phẩm',
                     'addproduct'  => 'Thêm sản phẩm',
                     'editproduct' => 'Sửa sản phẩm',
                     'users'       => 'Người dùng',
+                    'orders'      => 'Đơn hàng',
+                    'order_detail'=> 'Chi tiết đơn hàng',
                     ''            => 'Dashboard',
                 ];
                 $current_act = $_GET['act'] ?? '';

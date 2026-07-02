@@ -6,6 +6,13 @@
     </div>
 </div>
 
+<?php if(isset($_GET['error']) && $_GET['error'] == 'cannot_delete_user'): ?>
+<div style="margin-bottom:16px; padding:14px 18px; background:rgba(239,68,68,0.12); border:1px solid var(--danger); border-radius:var(--radius-md); color:var(--danger); display:flex; align-items:center; gap:10px;">
+    <i class="fas fa-ban"></i>
+    <span>Không thể xóa người dùng. Chức năng này đã bị vô hiệu hóa để bảo vệ dữ liệu.</span>
+</div>
+<?php endif; ?>
+
 <!-- Users Table -->
 <div class="panel">
     <div class="panel-header">
@@ -45,14 +52,9 @@
                         <?php endif; ?>
                     </td>
                     <td style="text-align:right;">
-                        <?php if($u['role'] != 1): ?>
-                        <a href="index.php?act=deluser&id=<?= $u['id'] ?>" class="btn-danger-custom"
-                           onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
-                            <i class="fas fa-trash"></i> Xóa
-                        </a>
-                        <?php else: ?>
-                        <span style="font-size:11px; color:var(--text-muted);">Không thể xóa</span>
-                        <?php endif; ?>
+                        <span style="font-size:11px; color:var(--text-muted);" title="Chức năng xóa đã bị vô hiệu hóa">
+                            <i class="fas fa-lock" style="margin-right:4px;"></i>Không thể xóa
+                        </span>
                     </td>
                 </tr>
                 <?php endforeach; ?>

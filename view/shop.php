@@ -45,6 +45,12 @@
 
 <?php
 $idcat = isset($_GET['idcat']) ? intval($_GET['idcat']) : 0;
+$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : "";
+$sort = isset($_GET['sort']) ? $_GET['sort'] : "newest";
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+if ($page < 1) $page = 1;
+$limit = 9; // Hiển thị 9 SP mỗi trang
+
 $category_name = "";
 if ($idcat > 0) {
     $category = get_category($idcat);
@@ -52,7 +58,20 @@ if ($idcat > 0) {
         $category_name = $category['name'];
     }
 }
-$products = get_products(0, $idcat);
+
+$filter_result = get_products_with_filter($keyword, $idcat, $sort, $page, $limit);
+$products = $filter_result['data'];
+$total_pages = $filter_result['total_pages'];
+$total_items = $filter_result['total_items'];
+
+// Hàm hỗ trợ tạo URL
+function build_shop_url($params_to_update) {
+    $params = $_GET;
+    foreach ($params_to_update as $k => $v) {
+        $params[$k] = $v;
+    }
+    return 'index.php?' . http_build_query($params);
+}
 ?>
 <!-- breadcrumbs -->
 <nav class="container mt-4 mt-sm-4 mt-md-4 mt-lg-3 d-flex flex-wrap align-items-center gap-2 px-3">
@@ -75,6 +94,14 @@ $products = get_products(0, $idcat);
                 <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
             <a class="text-muted text-decoration-none pointer-events-none" href="#"><?php echo htmlspecialchars($category_name); ?></a>
+        </div>
+    <?php endif; ?>
+    <?php if ($keyword != ""): ?>
+        <div class="d-flex align-items-center gap-2 ml-1">
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="text-muted ml-2" height="18px" width="18px" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a class="text-muted text-decoration-none pointer-events-none" href="#">Tìm kiếm: "<?php echo htmlspecialchars($keyword); ?>"</a>
         </div>
     <?php endif; ?>
 </nav>
@@ -261,7 +288,7 @@ $products = get_products(0, $idcat);
                 <section class="col-lg-9 col-md-12 order-1 order-sm-1 order-md-1 order-lg-2">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-2">
                         <div class="mb-3 mb-md-0">
-                            <p class="mb-0">Có <?php echo count($products); ?> sản phẩm</p>
+                            <p class="mb-0">Có <?php echo $total_items; ?> sản phẩm</p>
                         </div>
                         <div class="d-flex align-items-center">
                             <div class="d-lg-none me-2">
@@ -274,12 +301,12 @@ $products = get_products(0, $idcat);
                             </div>
                             <div class="d-flex align-items-center">
                                 <label for="sortSelect" class="me-2 mb-0" style="white-space: nowrap;">Sắp xếp theo:</label>
-                                <select class="form-select w-auto" id="sortSelect">
-                                    <option value="popular">Phổ biến nhất</option>
-                                    <option value="price-low">Giá: Thấp đến Cao</option>
-                                    <option value="price-high">Giá: Cao đến Thấp</option>
-                                    <option value="newest">Mới nhất</option>
-                                    <option value="rating">Đánh giá khách hàng</option>
+                                <select class="form-select w-auto" id="sortSelect" onchange="window.location.href=this.value;">
+                                    <option value="<?= build_shop_url(['sort' => 'newest', 'page' => 1]) ?>" <?= $sort == 'newest' ? 'selected' : '' ?>>Mới nhất</option>
+                                    <option value="<?= build_shop_url(['sort' => 'popular', 'page' => 1]) ?>" <?= $sort == 'popular' ? 'selected' : '' ?>>Phổ biến nhất</option>
+                                    <option value="<?= build_shop_url(['sort' => 'price-low', 'page' => 1]) ?>" <?= $sort == 'price-low' ? 'selected' : '' ?>>Giá: Thấp đến Cao</option>
+                                    <option value="<?= build_shop_url(['sort' => 'price-high', 'page' => 1]) ?>" <?= $sort == 'price-high' ? 'selected' : '' ?>>Giá: Cao đến Thấp</option>
+                                    <option value="<?= build_shop_url(['sort' => 'rating', 'page' => 1]) ?>" <?= $sort == 'rating' ? 'selected' : '' ?>>Đánh giá khách hàng</option>
                                 </select>
                             </div>
                         </div>
@@ -294,32 +321,33 @@ $products = get_products(0, $idcat);
                                     $discount_percent = round((($old_price - $price) / $old_price) * 100);
                                     $discount = '<span class="discount">-'.$discount_percent.'%</span>';
                                 }
+                                $detail_url = 'index.php?act=shop-single&id='.$id;
                                 echo '<div class="col mb-4">
                                         <div class="product-card">
                                             <div class="product-actions">
-                                                <div class="action-btn wishlist-toggle" data-id="'.$id.'">
-                                                    <i class="far fa-heart"></i>
-                                                </div>
-                                                <a href="index.php?act=shop-single" class="action-btn">
+                                                <a href="'.$detail_url.'" class="action-btn" title="Xem chi tiết">
                                                     <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="index.php?act=addwishlist&id='.$id.'" class="action-btn" title="Thêm vào yêu thích">
+                                                    <i class="fas fa-heart"></i>
                                                 </a>
                                             </div>
                                             <div class="product-img-container">
-                                                <a href="index.php?act=shop-single">
+                                                <a href="'.$detail_url.'">
                                                     <img src="'.$img.'" class="product-img" alt="'.$name.'">
                                                 </a>
                                             </div>
-                                            <h6><a href="index.php?act=shop-single">'.$name.'</a></h6>
+                                            <h6><a href="'.$detail_url.'">'.$name.'</a></h6>
                                             <div class="rating mb-2">
                                                 <span class="d-flex align-items-center text-warning small">★★★★★</span>
                                             </div>
                                             <div class="price-wrap">
-                                                <span class="price">$'.number_format($price, 2).'</span>
-                                                '.($old_price > 0 ? '<span class="old-price text-muted text-decoration-line-through small">$'.number_format($old_price, 2).'</span>' : '').'
+                                                <span class="price">'.number_format($price, 0, ',', '.').' đ</span>
+                                                '.($old_price > 0 ? '<span class="old-price text-muted text-decoration-line-through small">'.number_format($old_price, 0, ',', '.').' đ</span>' : '').'
                                                 '.$discount.'
                                             </div>
                                             <div class="cart-btn">
-                                                '.show_btn_addtocart($id, $name, $img, $price).'
+                                                '.show_btn_addtocart($id, $name, $img, $price, $quantity).'
                                             </div>
                                         </div>
                                     </div>';
@@ -330,28 +358,52 @@ $products = get_products(0, $idcat);
                     <div class="row mb-5 my-5">
                         <div class="col-lg-12">
                             <div class="my-4 border rounded d-flex p-3 align-items-center justify-content-between">
-                                <ul class="d-flex align-items-center list-unstyled mb-0 pagination">
-                                <li class="text-muted">
-                                    <svg  stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg">
-                                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                                        <polyline points="12 19 5 12 12 5"></polyline>
-                                    </svg>
-                                </li>
-                                <li class="rounded bg-primary">
-                                    <a href="#" class="text-white">1</a>
-                                </li>
-                                <li class="cursor-pointer  rounded"><a href="#">2</a></li>
-                                <li class="cursor-pointer rounded"><a href="#">3</a></li>
-                                <li class="cursor-pointer rounded">
-                                    <a href="#">
-                                        <svg class="text-primary" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg">
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                            <polyline points="12 5 19 12 12 19"></polyline>
-                                        </svg>
-                                    </a>
-                                </li>
+                                <?php if ($total_pages > 1): ?>
+                                <ul class="d-flex align-items-center list-unstyled mb-0 pagination gap-1">
+                                    <!-- Prev -->
+                                    <?php if ($page > 1): ?>
+                                    <li class="cursor-pointer rounded">
+                                        <a class="px-2 py-1 text-muted text-decoration-none" href="<?= build_shop_url(['page' => $page - 1]) ?>">
+                                            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg">
+                                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                                <polyline points="12 19 5 12 12 5"></polyline>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                    <?php endif; ?>
+
+                                    <!-- Page numbers -->
+                                    <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                                    <li class="rounded <?= ($i == $page) ? 'bg-primary' : 'cursor-pointer' ?>">
+                                        <a href="<?= build_shop_url(['page' => $i]) ?>" class="px-3 py-1 text-decoration-none <?= ($i == $page) ? 'text-white' : 'text-dark' ?>"><?= $i ?></a>
+                                    </li>
+                                    <?php endfor; ?>
+
+                                    <!-- Next -->
+                                    <?php if ($page < $total_pages): ?>
+                                    <li class="cursor-pointer rounded">
+                                        <a class="px-2 py-1 text-muted text-decoration-none" href="<?= build_shop_url(['page' => $page + 1]) ?>">
+                                            <svg class="text-primary" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg">
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                <polyline points="12 5 19 12 12 19"></polyline>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                    <?php endif; ?>
                                 </ul>
-                                <div class="d-none d-lg-flex text-right mr-3">Hiển thị 1 - 6 trong số 7 sản phẩm</div>
+                                <?php endif; ?>
+                                
+                                <div class="d-none d-lg-flex text-right mr-3">
+                                    <?php
+                                        $start_item = ($page - 1) * $limit + 1;
+                                        $end_item = min($page * $limit, $total_items);
+                                        if ($total_items > 0) {
+                                            echo "Hiển thị $start_item - $end_item trong số $total_items sản phẩm";
+                                        } else {
+                                            echo "Không tìm thấy sản phẩm nào";
+                                        }
+                                    ?>
+                                </div>
                             </div>
                         </div>
                     </div>

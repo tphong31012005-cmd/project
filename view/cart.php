@@ -34,7 +34,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="py-4">$<?= number_format($item['price'], 2) ?></td>
+                                    <td class="py-4"><?= number_format($item['price'], 0, ',', '.') ?> đ</td>
                                     <td class="py-4">
                                         <div class="input-group input-group-sm" style="width: 100px;">
                                             <button onclick="updateCart(<?= $item['id'] ?>, 'dec')" class="btn btn-outline-secondary border-0 bg-light d-flex align-items-center">-</button>
@@ -42,7 +42,7 @@
                                             <button onclick="updateCart(<?= $item['id'] ?>, 'inc')" class="btn btn-outline-secondary border-0 bg-light d-flex align-items-center">+</button>
                                         </div>
                                     </td>
-                                    <td class="py-4 fw-bold text-primary">$<?= number_format($subtotal, 2) ?></td>
+                                    <td class="py-4 fw-bold text-primary"><?= number_format($subtotal, 0, ',', '.') ?> đ</td>
                                     <td class="pe-4 py-4 text-end">
                                         <button onclick="deleteCartItem(<?= $item['id'] ?>)" class="btn btn-link text-danger text-decoration-none p-0 border-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
@@ -71,7 +71,7 @@
                         <h5 class="fw-bold mb-4">Tóm tắt đơn hàng</h5>
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-muted">Tạm tính</span>
-                            <span class="fw-bold" id="bill-subtotal">$<?= number_format($total_bill, 2) ?></span>
+                            <span class="fw-bold" id="bill-subtotal"><?= number_format($total_bill, 0, ',', '.') ?> đ</span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-muted">Vận chuyển</span>
@@ -80,9 +80,13 @@
                         <hr class="my-4">
                         <div class="d-flex justify-content-between mb-4">
                             <span class="fs-5 fw-bold">Tổng cộng</span>
-                            <span class="fs-5 fw-bold text-primary" id="bill-total">$<?= number_format($total_bill, 2) ?></span>
+                            <span class="fs-5 fw-bold text-primary" id="bill-total"><?= number_format($total_bill, 0, ',', '.') ?> đ</span>
                         </div>
-                        <button class="btn btn-primary w-100 py-3 fw-bold rounded-3 text-uppercase shadow-sm">Tiến hành thanh toán</button>
+                        <?php if(count($cart_items) > 0): ?>
+                            <a href="index.php?act=checkout" id="btn-checkout" class="btn btn-primary w-100 py-3 fw-bold rounded-3 text-uppercase shadow-sm text-center d-block text-white text-decoration-none">Tiến hành thanh toán</a>
+                        <?php else: ?>
+                            <button id="btn-checkout" class="btn btn-secondary w-100 py-3 fw-bold rounded-3 text-uppercase shadow-sm" disabled>Tiến hành thanh toán</button>
+                        <?php endif; ?>
                         <div class="text-center mt-3">
                             <a href="index.php?act=shop" class="text-muted text-decoration-none small">Tiếp tục mua hàng</a>
                         </div>
@@ -108,9 +112,12 @@ async function updateCart(id, type) {
         const data = await response.json();
         if (data.status === 'success') {
             renderCart(data);
+        } else {
+            alert(data.message || 'Có lỗi xảy ra!');
         }
     } catch (error) {
         console.error('Error updating cart:', error);
+        alert('Có lỗi kết nối mạng, vui lòng thử lại!');
     }
 }
 
@@ -129,9 +136,12 @@ async function deleteCartItem(id) {
         const data = await response.json();
         if (data.status === 'success') {
             renderCart(data);
+        } else {
+            alert(data.message || 'Có lỗi xảy ra!');
         }
     } catch (error) {
         console.error('Error deleting item:', error);
+        alert('Có lỗi kết nối mạng, vui lòng thử lại!');
     }
 }
 
@@ -141,8 +151,8 @@ function renderCart(data) {
     cartBadges.forEach(badge => badge.innerText = data.cart_count);
 
     // Update Totals
-    document.getElementById('bill-subtotal').innerText = '$' + data.total_bill;
-    document.getElementById('bill-total').innerText = '$' + data.total_bill;
+    document.getElementById('bill-subtotal').innerText = data.total_bill;
+    document.getElementById('bill-total').innerText = data.total_bill;
 
     if (data.cart_items.length === 0) {
         document.getElementById('cart-list').innerHTML = `
@@ -153,12 +163,16 @@ function renderCart(data) {
                 </td>
             </tr>
         `;
+        const btnCheckout = document.getElementById('btn-checkout');
+        if (btnCheckout) {
+            btnCheckout.outerHTML = `<button id="btn-checkout" class="btn btn-secondary w-100 py-3 fw-bold rounded-3 text-uppercase shadow-sm" disabled>Tiến hành thanh toán</button>`;
+        }
         return;
     }
 
     let html = '';
     data.cart_items.forEach(item => {
-        const subtotal = (item.price * item.quantity).toFixed(2);
+        const subtotal = Math.round(item.price * item.quantity);
         html += `
             <tr id="cart-item-${item.id}">
                 <td class="ps-4 py-4">
@@ -170,7 +184,7 @@ function renderCart(data) {
                         </div>
                     </div>
                 </td>
-                <td class="py-4">$${parseFloat(item.price).toFixed(2)}</td>
+                <td class="py-4">${Math.round(item.price).toLocaleString('vi-VN')} đ</td>
                 <td class="py-4">
                     <div class="input-group input-group-sm" style="width: 100px;">
                         <button onclick="updateCart(${item.id}, 'dec')" class="btn btn-outline-secondary border-0 bg-light d-flex align-items-center">-</button>
@@ -178,7 +192,7 @@ function renderCart(data) {
                         <button onclick="updateCart(${item.id}, 'inc')" class="btn btn-outline-secondary border-0 bg-light d-flex align-items-center">+</button>
                     </div>
                 </td>
-                <td class="py-4 fw-bold text-primary">$${parseFloat(subtotal).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="py-4 fw-bold text-primary">${subtotal.toLocaleString('vi-VN')} đ</td>
                 <td class="pe-4 py-4 text-end">
                     <button onclick="deleteCartItem(${item.id})" class="btn btn-link text-danger text-decoration-none p-0 border-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>

@@ -5,7 +5,7 @@
             <div class="col-lg-8 col-md-12 col-sm-12 col-12 mb-3 mb-lg-0">
                 <div class="owl-carousel owl-theme banner-slider">
                     <div class="position-relative">
-                        <img src="./assets/images/banner/1.png" class="" alt="eCommerce Template">
+                        <img src="./assets/images/banner/banner_watch.png" class="" alt="eCommerce Template">
                         <div class="banner-content position-absolute align-items-center">
                             <div class="banner-title-wrap wow animate__animated animate__fadeInUp"
                                 data-wow-delay="0.2s">
@@ -17,13 +17,13 @@
                             </div>
                             <div class="banner-button mt-3 wow animate__animated animate__fadeInUp"
                                 data-wow-delay="0.9s">
-                                <a href="index.php?act=shop-single"
+                                <a href="index.php?act=shop&keyword=Apple"
                                     class="btn btn-primary rounded-0 text-white text-uppercase ">Mua ngay</a>
                             </div>
                         </div>
                     </div>
                     <div class=" position-relative ">
-                        <img src="./assets/images/banner/4.webp" class="" alt="eCommerce Template">
+                        <img src="./assets/images/banner/banner_phone.png" class="" alt="eCommerce Template">
                         <div class="banner-content position-absolute align-items-center">
                             <div class="banner-title-wrap wow animate__animated animate__fadeInUp"
                                 data-wow-delay="0.2s">
@@ -36,7 +36,7 @@
                             </div>
                             <div class="banner-button mt-3 wow animate__animated animate__fadeInUp"
                                 data-wow-delay="0.9s">
-                                <a href="index.php?act=shop-single"
+                                <a href="index.php?act=shop&keyword=iPhone"
                                     class="btn btn-primary rounded-0 text-white text-uppercase">Mua ngay</a>
                             </div>
                         </div>
@@ -149,45 +149,36 @@
     </div>
 </div>
 
-<!-- Categories Section -->
-<div class="category-list mt-60">
-    <div class="container">
-        <div class="owl-carousel category-slider">
-            <?php
-            $categories = get_all_categories();
-            foreach ($categories as $cat) {
-                echo '<div class="item">
-                    <a href="index.php?act=shop&idcat='.$cat['id'].'">
-                        <img src="./'.$cat['img'].'" class="img-fluid" alt="'.$cat['name'].'">
-                        <div class="category-title d-flex justify-content-center align-items-center">
-                            <p class="text-nowrap mt-2 fw-normal text-black">'.$cat['name'].'</p>
-                        </div>
-                    </a>
-                </div>';
-            }
-            ?>
-        </div>
-    </div>
-</div>
-<!-- End Categories Section -->
+
 
 <div class="container mt-60">
     <div class="row">
-        <!-- Deals Of The Day -->
         <div class="col-12 col-md-12 col-lg-6 mb-3 mb-lg-0">
             <h5 class="fw-bold fs-4 mb-4">Khuyến mãi trong ngày</h5>
             <div class="owl-carousel owl-theme deal-slider">
+                <?php 
+                $deals_btn = get_hot_products(2);
+                foreach($deals_btn as $p):
+                    extract($p);
+                    $discount_html = "";
+                    if($old_price > 0 && $old_price > $price){
+                        $discount_percent = round((($old_price - $price) / $old_price) * 100);
+                        $discount_html = '<span class="discount">-'.$discount_percent.'%</span>';
+                    }
+                    $is_out_of_stock = ($quantity <= 0);
+                ?>
                 <div class="deal-card">
-                    <span class="badge-new">Sản phẩm mới</span>
-                    <span class="wishlist-icon"><i class="fas fa-heart"></i></span>
+                    <span class="badge-new <?= $is_out_of_stock ? 'bg-danger' : '' ?>">
+                        <?= $is_out_of_stock ? 'Hết hàng' : 'Hot Deal' ?>
+                    </span>
                     <div class="row g-3">
                         <div class="col-md-5">
-                            <a href="index.php?act=shop-single">
-                                <img src="assets/images/product/14.png" class="img-fluid product-img" alt="TV">
+                            <a href="index.php?act=shop-single&id=<?= $id ?>">
+                                <img src="<?= $img ?>" class="img-fluid product-img" alt="<?= htmlspecialchars($name) ?>">
                             </a>
                         </div>
                         <div class="col-md-7">
-                            <h6><a href="index.php?act=shop-single">Samsung 80 cm (32 inch) HD Ready LED Smart Google TV</a></h6>
+                            <h6><a href="index.php?act=shop-single&id=<?= $id ?>"><?= htmlspecialchars($name) ?></a></h6>
                             <div class="rating mb-2">
                                 <span class="d-flex align-items-center">
                                     <span class="star-icon text-warning">★</span>
@@ -198,19 +189,14 @@
                                 </span>
                             </div>
                             <div class="mb-2">
-                                <span class="old-price">$30.00</span>
-                                <span class="price">$28.50</span>
-                                <span class="discount">5%</span>
+                                <?php if($old_price > 0): ?>
+                                <span class="old-price text-muted text-decoration-line-through small"><?= number_format($old_price, 0, ',', '.') ?> đ</span>
+                                <?php endif; ?>
+                                <span class="price text-primary fw-bold ms-1"><?= number_format($price, 0, ',', '.') ?> đ</span>
+                                <?= $discount_html ?>
                             </div>
-                            <?php 
-                            $deals_btn = get_hot_products(2);
-                            // We use dummy index for these static cards
-                            $db_idx = isset($db_idx) ? $db_idx + 1 : 0;
-                            if(isset($deals_btn[$db_idx])) {
-                                echo show_btn_addtocart($deals_btn[$db_idx]['id'], $deals_btn[$db_idx]['name'], $deals_btn[$db_idx]['img'], $deals_btn[$db_idx]['price']);
-                            }
-                            ?>
-                            <p class="mt-2 small text-muted">Tình trạng: 900 Trong kho</p>
+                            <?= show_btn_addtocart($id, $name, $img, $price, $quantity) ?>
+                            <p class="mt-2 small text-muted">Tình trạng: <?= $quantity > 0 ? $quantity . ' Trong kho' : 'Hết hàng' ?></p>
 
                             <!-- Countdown -->
                             <div class="countdown" id="deal-countdown" data-second="95620">
@@ -222,52 +208,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="deal-card">
-                    <span class="badge-new bg-danger">Hết hàng</span>
-                    <span class="wishlist-icon"><i class="fas fa-heart"></i></span>
-                    <div class="row g-3">
-                        <div class="col-md-5">
-                            <a href="index.php?act=shop-single">
-                                <img src="assets/images/product/5.png" class="img-fluid product-img" alt="product">
-                            </a>
-                        </div>
-                        <div class="col-md-7">
-                            <h6><a href="index.php?act=shop-single">boAt Rockerz 425 w/ 25 hrs Playtime,40 mm Drivers, BEAST
-                                    Mode</a></h6>
-                            <div class="rating mb-2">
-                                <span class="d-flex align-items-center">
-                                    <span class="star-icon text-warning">★</span>
-                                    <span class="star-icon text-warning">★</span>
-                                    <span class="star-icon text-warning">★</span>
-                                    <span class="star-icon text-warning">★</span>
-                                    <span class="star-icon text-warning">★</span>
-                                </span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="old-price">$30.00</span>
-                                <span class="price">$28.50</span>
-                                <span class="discount">5%</span>
-                            </div>
-                            <?php 
-                            $deals_btn = get_hot_products(2);
-                            // We use dummy index for these static cards
-                            $db_idx = isset($db_idx) ? $db_idx + 1 : 0;
-                            if(isset($deals_btn[$db_idx])) {
-                                echo show_btn_addtocart($deals_btn[$db_idx]['id'], $deals_btn[$db_idx]['name'], $deals_btn[$db_idx]['img'], $deals_btn[$db_idx]['price']);
-                            }
-                            ?>
-                            <p class="mt-2 small text-muted">Tình trạng: 900 Trong kho</p>
-
-                            <!-- Countdown -->
-                            <div class="countdown" id="deal-countdown" data-second="105620">
-                                <div><strong id="days">0</strong><span>Ngày</span></div>
-                                <div><strong id="hours">0</strong><span>Giờ</span></div>
-                                <div><strong id="minutes">0</strong><span>Phút</span></div>
-                                <div><strong id="seconds">0</strong><span>Giây</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 
@@ -286,29 +227,29 @@
                     }
                     echo '<div class="product-card">
                             <div class="product-actions">
-                                <div class="action-btn wishlist-toggle" data-id="'.$id.'" title="Yêu thích">
-                                    <i class="far fa-heart"></i>
-                                </div>
-                                <a href="index.php?act=shop-single" class="action-btn" title="Xem chi tiết">
+                                <a href="index.php?act=shop-single&id='.$id.'" class="action-btn" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="index.php?act=addwishlist&id='.$id.'" class="action-btn" title="Thêm vào yêu thích">
+                                    <i class="fas fa-heart"></i>
                                 </a>
                             </div>
                             <div class="product-img-container">
-                                <a href="index.php?act=shop-single">
+                                <a href="index.php?act=shop-single&id='.$id.'">
                                     <img src="'.$img.'" class="product-img" alt="'.$name.'">
                                 </a>
                             </div>
-                            <h6><a href="index.php?act=shop-single">'.$name.'</a></h6>
+                            <h6><a href="index.php?act=shop-single&id='.$id.'">'.$name.'</a></h6>
                             <div class="rating mb-2">
                                 <span class="d-flex align-items-center text-warning small">★★★★★</span>
                             </div>
                             <div class="price-wrap">
-                                <span class="price">$'.number_format($price, 2).'</span>
-                                '.($old_price > 0 ? '<span class="old-price">$'.number_format($old_price, 2).'</span>' : '').'
+                                <span class="price">'.number_format($price, 0, ',', '.').' đ</span>
+                                '.($old_price > 0 ? '<span class="old-price">'.number_format($old_price, 0, ',', '.').' đ</span>' : '').'
                                 '.$discount.'
                             </div>
                             <div class="cart-btn">
-                                '.show_btn_addtocart($id, $name, $img, $price).'
+                                '.show_btn_addtocart($id, $name, $img, $price, $quantity).'
                             </div>
                     </div>';
                 }
@@ -324,11 +265,11 @@
             <div class="promo-box d-flex flex-column">
                 <div>
                     <h5>Hàng mới về</h5>
-                    <h3><a href="index.php?act=shop-single">iPhone Pro 14 Max</a></h3>
+                    <h3><a href="index.php?act=shop&keyword=iPhone">iPhone Pro 14 Max</a></h3>
                     <p class="mb-1">Giá từ:</p>
-                    <p class="price">$429.99</p>
+                    <p class="price">10.990.000 đ</p>
                 </div>
-                <a href="index.php?act=shop-single" class="text-center">
+                <a href="index.php?act=shop&keyword=iPhone" class="text-center">
                     <img src="assets/images/product/17.png" class="img-fluid mt-3" alt="iPhone">
                 </a>
             </div>
@@ -350,29 +291,26 @@
                     }
                     echo '<div class="product-card">
                             <div class="product-actions">
-                                <div class="action-btn wishlist-toggle" data-id="'.$id.'">
-                                    <i class="far fa-heart"></i>
-                                </div>
-                                <a href="index.php?act=shop-single" class="action-btn">
+                                <a href="index.php?act=shop-single&id='.$id.'" class="action-btn">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
                             <div class="product-img-container">
-                                <a href="index.php?act=shop-single">
+                                <a href="index.php?act=shop-single&id='.$id.'">
                                     <img src="'.$img.'" class="product-img" alt="'.$name.'">
                                 </a>
                             </div>
-                            <h6><a href="index.php?act=shop-single">'.$name.'</a></h6>
+                            <h6><a href="index.php?act=shop-single&id='.$id.'">'.$name.'</a></h6>
                             <div class="rating mb-2">
                                 <span class="d-flex align-items-center text-warning small">★★★★★</span>
                             </div>
                             <div class="price-wrap">
-                                <span class="price">$'.number_format($price, 2).'</span>
-                                '.($old_price > 0 ? '<span class="old-price">$'.number_format($old_price, 2).'</span>' : '').'
+                                <span class="price">'.number_format($price, 0, ',', '.').' đ</span>
+                                '.($old_price > 0 ? '<span class="old-price">'.number_format($old_price, 0, ',', '.').' đ</span>' : '').'
                                 '.$discount.'
                             </div>
                             <div class="cart-btn">
-                                '.show_btn_addtocart($id, $name, $img, $price).'
+                                '.show_btn_addtocart($id, $name, $img, $price, $quantity).'
                             </div>
                     </div>';
                 }
@@ -388,11 +326,11 @@
             <div class="promo-box d-flex flex-column">
                 <div>
                     <h5>Hàng mới về</h5>
-                    <h3><a href="index.php?act=shop-single">MarQ 80 cm (32 inch) HD</a></h3>
+                    <h3><a href="index.php?act=shop&keyword=MarQ">MarQ 80 cm (32 inch) HD</a></h3>
                     <p class="mb-1">Giá từ:</p>
-                    <p class="price">$429.99</p>
+                    <p class="price">4.290.000 đ</p>
                 </div>
-                <a href="index.php?act=shop-single" class="text-center">
+                <a href="index.php?act=shop&keyword=MarQ" class="text-center">
                     <img src="assets/images/product/14.png" class="img-fluid mt-3" alt="TV">
                 </a>
             </div>
@@ -414,29 +352,29 @@
                     }
                     echo '<div class="product-card">
                             <div class="product-actions">
-                                <div class="action-btn wishlist-toggle" data-id="'.$id.'">
-                                    <i class="far fa-heart"></i>
-                                </div>
-                                <a href="index.php?act=shop-single" class="action-btn">
+                                <a href="index.php?act=shop-single&id='.$id.'" class="action-btn" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="index.php?act=addwishlist&id='.$id.'" class="action-btn" title="Thêm vào yêu thích">
+                                    <i class="fas fa-heart"></i>
                                 </a>
                             </div>
                             <div class="product-img-container">
-                                <a href="index.php?act=shop-single">
+                                <a href="index.php?act=shop-single&id='.$id.'">
                                     <img src="'.$img.'" class="product-img" alt="'.$name.'">
                                 </a>
                             </div>
-                            <h6><a href="index.php?act=shop-single">'.$name.'</a></h6>
+                            <h6><a href="index.php?act=shop-single&id='.$id.'">'.$name.'</a></h6>
                             <div class="rating mb-2">
                                 <span class="d-flex align-items-center text-warning small">★★★★★</span>
                             </div>
                             <div class="price-wrap">
-                                <span class="price">$'.number_format($price, 2).'</span>
-                                '.($old_price > 0 ? '<span class="old-price">$'.number_format($old_price, 2).'</span>' : '').'
+                                <span class="price">'.number_format($price, 0, ',', '.').' đ</span>
+                                '.($old_price > 0 ? '<span class="old-price">'.number_format($old_price, 0, ',', '.').' đ</span>' : '').'
                                 '.$discount.'
                             </div>
                             <div class="cart-btn">
-                                '.show_btn_addtocart($id, $name, $img, $price).'
+                                '.show_btn_addtocart($id, $name, $img, $price, $quantity).'
                             </div>
                         </div>';
                 }
@@ -464,29 +402,26 @@
             }
             echo '<div class="product-card">
                     <div class="product-actions">
-                        <div class="action-btn wishlist-toggle" data-id="'.$id.'">
-                            <i class="far fa-heart"></i>
-                        </div>
-                        <a href="index.php?act=shop-single" class="action-btn">
+                        <a href="index.php?act=shop-single&id='.$id.'" class="action-btn">
                             <i class="fas fa-eye"></i>
                         </a>
                     </div>
                     <div class="product-img-container">
-                        <a href="index.php?act=shop-single">
+                        <a href="index.php?act=shop-single&id='.$id.'">
                             <img src="'.$img.'" class="product-img" alt="'.$name.'">
                         </a>
                     </div>
-                    <h6><a href="index.php?act=shop-single">'.$name.'</a></h6>
+                    <h6><a href="index.php?act=shop-single&id='.$id.'">'.$name.'</a></h6>
                     <div class="rating mb-2">
                         <span class="d-flex align-items-center text-warning small">★★★★★</span>
                     </div>
                     <div class="price-wrap">
-                        <span class="price">$'.number_format($price, 2).'</span>
-                        '.($old_price > 0 ? '<span class="old-price">$'.number_format($old_price, 2).'</span>' : '').'
+                        <span class="price">'.number_format($price, 0, ',', '.').' đ</span>
+                        '.($old_price > 0 ? '<span class="old-price">'.number_format($old_price, 0, ',', '.').' đ</span>' : '').'
                         '.$discount.'
                     </div>
                     <div class="cart-btn">
-                        '.show_btn_addtocart($id, $name, $img, $price).'
+                        '.show_btn_addtocart($id, $name, $img, $price, $quantity).'
                     </div>
                 </div>';
         }

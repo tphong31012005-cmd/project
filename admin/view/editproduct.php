@@ -15,6 +15,12 @@
             <span class="panel-title"><i class="fas fa-pen" style="color:var(--info); margin-right:8px;"></i>Thông tin sản phẩm</span>
         </div>
         <div class="panel-body">
+            <?php if(isset($error_msg) && $error_msg != ""): ?>
+            <div style="background:#fce8e6; color:#a51d24; border:1px solid #f5c2c7; padding:12px; border-radius:8px; margin-bottom:20px; font-weight:500;">
+                <i class="fas fa-exclamation-triangle" style="margin-right:8px;"></i><?= htmlspecialchars($error_msg) ?>
+            </div>
+            <?php endif; ?>
+
             <form action="index.php?act=editproduct" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="<?= $product['id'] ?>">
                 <input type="hidden" name="old_img" value="<?= htmlspecialchars($product['img']) ?>">
@@ -26,13 +32,18 @@
 
                 <div class="row-2">
                     <div class="form-group">
-                        <label class="form-label-custom">Giá bán ($) <span style="color:var(--danger);">*</span></label>
-                        <input type="number" step="0.01" class="form-control-custom" name="price" value="<?= $product['price'] ?>" required>
+                        <label class="form-label-custom">Giá bán (VNĐ) <span style="color:var(--danger);">*</span></label>
+                        <input type="number" min="0" step="1" class="form-control-custom" name="price" value="<?= round($product['price']) ?>" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label-custom">Giá gốc ($)</label>
-                        <input type="number" step="0.01" class="form-control-custom" name="old_price" value="<?= $product['old_price'] ?>">
+                        <label class="form-label-custom">Giá gốc (VNĐ)</label>
+                        <input type="number" min="0" step="1" class="form-control-custom" name="old_price" value="<?= $product['old_price'] ? round($product['old_price']) : '' ?>">
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label-custom">Số lượng tồn kho <span style="color:var(--danger);">*</span></label>
+                    <input type="number" min="0" step="1" class="form-control-custom" name="quantity" value="<?= isset($product['quantity']) ? $product['quantity'] : 50 ?>" required>
                 </div>
 
                 <div class="form-group">

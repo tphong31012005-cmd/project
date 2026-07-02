@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="./assets/plugin/OwlCarousel2-2.3.4/dist/assets/owl.theme.default.min.css">
     <link rel="stylesheet" href="./assets/plugin/nouislider/nouislider.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/style.css?v=<?= time() ?>">
     <!-- Theme init: apply before render to prevent flash -->
     <script>
         (function(){
@@ -37,42 +37,7 @@
 </head>
 <!-- Header Section Start -->
 <header>
-    <div class="top-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6 d-none d-sm-none p-0 d-md-none d-lg-block">
-                    <ul class="list-unstyled m-0 d-flex p-0 top-header-menu">
-                        <li><a href="index.php">Trang chủ</a></li>
-                        <li><a href="index.php?act=about">Giới thiệu</a></li>
-                        <li><a href="index.php?act=contact">Liên hệ</a></li>
-                    </ul>
-                </div>
-                <div
-                    class="col-12 col-sm-12 col-md-12 col-lg-6 p-0 d-none d-sm-none d-md-none d-lg-flex justify-content-end align-items-center">
-                    <ul class="list-unstyled m-0 d-flex p-0 top-header-menu">
-                        <li>
-                            <div class="country">
-                                <select class="nice-option">
-                                    <option value="USD">USD</option>
-                                    <option value="EUR">EUR</option>
-                                    <option value="GBP">GBP</option>
-                                    <option value="VND">VND</option>
-                                </select>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="lang">
-                                <select class="nice-option">
-                                    <option value="Vietnamese">Tiếng Việt</option>
-                                    <option value="English">Tiếng Anh</option>
-                                </select>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <div class="middle-header">
         <div class="container">
             <div class="row align-items-center">
@@ -88,38 +53,40 @@
                         </svg>
                     </button>
                 </div>
-                <div class="col-8 col-sm-8 col-md-8 col-lg-3 order-1 order-lg-1 d-flex justify-content-start">
-                    <a href="index.php">
-                        <span style="font-size: 32px; font-family: Arial, sans-serif; font-weight: bold;">WindyStore</span>
+                <div class="col-8 col-sm-8 col-md-8 col-lg-3 order-1 order-lg-1 d-flex justify-content-start align-items-center">
+                    <a href="index.php" class="d-flex align-items-center text-decoration-none">
+                        <div class="d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--theme-primary), #6366f1); border-radius: 8px; color: #fff; box-shadow: 0 4px 12px rgba(20, 108, 218, 0.2);">
+                            <i class="fas fa-wind" style="font-size: 18px;"></i>
+                        </div>
+                        <span class="text-dark-theme-compat" style="font-size: 26px; font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, var(--theme-primary), #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">WindyStore</span>
                     </a>
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 order-3 order-lg-2 mt-3 mt-lg-0 d-none d-lg-block">
-                    <div class="input-group search-container">
-                        <input type="text" class="form-control header-search" placeholder="Tìm kiếm">
-                        <select id="searchSelect" class="form-select flex-shrink-0">
-                            <option>Tất cả danh mục</option>
-                            <option>Linh kiện PC</option>
-                            <option>Laptop</option>
-                            <option>Điện thoại</option>
-                            <option>TV, Màn hình</option>
-                            <option>Máy ảnh</option>
-                            <option>Tai nghe</option>
-                            <option>Loa</option>
-                            <option>Máy in</option>
-                            <option>Máy chơi game</option>
-                            <option>Trò chơi</option>
-                            <option>Lưu trữ</option>
-                        </select>
-                        <span class="input-group-text text-black bg-primary">
-                            <svg aria-hidden="true" fill="none" focusable="false" width="24" height="24"
-                                class="icon-search" viewBox="0 0 24 24">
-                                <path d="M10.364 3a7.364 7.364 0 1 0 0 14.727 7.364 7.364 0 0 0 0-14.727Z" stroke="#fff"
-                                    stroke-width="1.5" stroke-miterlimit="10"></path>
-                                <path d="M15.857 15.858 21 21.001" stroke="#fff" stroke-width="1.5"
-                                    stroke-miterlimit="10" stroke-linecap="round"></path>
-                            </svg>
-                        </span>
-                    </div>
+                    <form action="index.php" method="GET" class="search-container position-relative">
+                        <input type="hidden" name="act" value="shop">
+                        <div class="input-group">
+                            <input type="text" name="keyword" class="form-control header-search" placeholder="Tìm kiếm sản phẩm..." autocomplete="off" value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
+                            <select name="idcat" class="form-select flex-shrink-0" style="max-width: 150px;">
+                                <option value="0">Tất cả danh mục</option>
+                                <?php
+                                $cats = get_all_categories();
+                                foreach($cats as $c) {
+                                    $selected = (isset($_GET['idcat']) && $_GET['idcat'] == $c['id']) ? 'selected' : '';
+                                    echo '<option value="'.$c['id'].'" '.$selected.'>'.$c['name'].'</option>';
+                                }
+                                ?>
+                            </select>
+                            <button class="btn btn-primary" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" width="20" height="20"
+                                    class="icon-search" viewBox="0 0 24 24">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="search-dropdown-results d-none position-absolute w-100 border shadow-sm rounded mt-1" style="top: 100%; left: 0; z-index: 1050; max-height: 400px; overflow-y: auto; background-color: var(--bs-body-bg);"></div>
+                    </form>
                 </div>
                 <div class="col-3 col-sm-3 col-md-3 col-lg-3 order-2 order-lg-3 d-flex justify-content-end">
                     <div>
@@ -150,22 +117,7 @@
                                     </a>
                                 <?php endif; ?>
                             </div>
-                            <div class="list-inline-item d-none d-lg-block">
-                                <a href="wishlist.php" class="text-muted position-relative">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-wishlist" width="25" height="25"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round">
-                                        <path
-                                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                        </path>
-                                    </svg>
-                                    <span
-                                        class="position-absolute top-0 start-100 translate-middle badge badge-count rounded-pill bg-primary">
-                                        5
-                                        <span class="visually-hidden">tin nhắn chưa đọc</span>
-                                    </span>
-                                </a>
-                            </div>
+
                             <div class="list-inline-item d-block d-lg-none">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#searchModal">
                                     <svg aria-hidden="true" fill="none" focusable="false" width="24" height="24"
@@ -183,37 +135,31 @@
                                             <div class="modal-content rounded-0">
                                                 <div class="modal-body">
                                                     <div class="row">
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control header-search"
-                                                                placeholder="Tìm kiếm">
-                                                            <select id="searchSelect" class="form-select flex-shrink-0">
-                                                                <option>Tất cả danh mục</option>
-                                                                <option>Trái cây & Rau củ</option>
-                                                                <option>Laptop</option>
-                                                                <option>Điện thoại</option>
-                                                                <option>TV, Màn hình</option>
-                                                                <option>Máy ảnh</option>
-                                                                <option>Tai nghe</option>
-                                                                <option>Loa</option>
-                                                                <option>Máy in</option>
-                                                                <option>Máy chơi game</option>
-                                                                <option>Trò chơi</option>
-                                                                <option>Lưu trữ</option>
-                                                            </select>
-                                                            <span class="input-group-text text-black bg-primary">
-                                                                <svg aria-hidden="true" fill="none" focusable="false"
-                                                                    width="24" height="24" class="icon-search"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path
-                                                                        d="M10.364 3a7.364 7.364 0 1 0 0 14.727 7.364 7.364 0 0 0 0-14.727Z"
-                                                                        stroke="#fff" stroke-width="1.5"
-                                                                        stroke-miterlimit="10"></path>
-                                                                    <path d="M15.857 15.858 21 21.001" stroke="#fff"
-                                                                        stroke-width="1.5" stroke-miterlimit="10"
-                                                                        stroke-linecap="round"></path>
-                                                                </svg>
-                                                            </span>
-                                                        </div>
+                                                        <form action="index.php" method="GET" class="search-container position-relative">
+                                                            <input type="hidden" name="act" value="shop">
+                                                            <div class="input-group">
+                                                                <input type="text" name="keyword" class="form-control header-search" placeholder="Tìm kiếm sản phẩm..." autocomplete="off" value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
+                                                                <select name="idcat" class="form-select flex-shrink-0" style="max-width: 120px;">
+                                                                    <option value="0">Tất cả</option>
+                                                                    <?php
+                                                                    $cats = get_all_categories();
+                                                                    foreach($cats as $c) {
+                                                                        $selected = (isset($_GET['idcat']) && $_GET['idcat'] == $c['id']) ? 'selected' : '';
+                                                                        echo '<option value="'.$c['id'].'" '.$selected.'>'.$c['name'].'</option>';
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                                <button class="btn btn-primary" type="submit">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                                                                        stroke-linecap="round" stroke-linejoin="round" width="20" height="20"
+                                                                        class="icon-search" viewBox="0 0 24 24">
+                                                                        <circle cx="11" cy="11" r="8"></circle>
+                                                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                            <div class="search-dropdown-results d-none position-absolute w-100 border shadow-sm rounded mt-1" style="top: 100%; left: 0; z-index: 1050; max-height: 400px; overflow-y: auto; background-color: var(--bs-body-bg);"></div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -235,6 +181,23 @@
                                         <span class="toggle-icon-moon" style="line-height:1;">&#9790;</span>
                                     </span>
                                 </button>
+                            </div>
+                            <div class="list-inline-item me-3">
+                                <a class="text-muted position-relative" href="index.php?act=wishlist" title="Danh sách yêu thích">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-heart">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge badge-count rounded-pill bg-danger">
+                                        <?php
+                                        $wishlist_count = 0;
+                                        if(isset($_SESSION['user'])){
+                                            $wishlist_count = get_wishlist_count($_SESSION['user']['id']);
+                                        }
+                                        echo $wishlist_count;
+                                        ?>
+                                        <span class="visually-hidden">sản phẩm yêu thích</span>
+                                    </span>
+                                </a>
                             </div>
                             <div class="list-inline-item me-3 me-lg-0">
                                 <a class="text-muted position-relative" href="index.php?act=cart">
@@ -371,9 +334,6 @@
                                             <a class="nav-link text-nowrap" href="index.php?act=shop">Khuyến mãi hot</a>
                                         </li>
                                         <li class="nav-item dropdown me-0 me-lg-2">
-                                            <a class="nav-link text-nowrap" href="index.php?act=shop">Giảm giá mùa hè</a>
-                                        </li>
-                                        <li class="nav-item dropdown me-0 me-lg-2">
                                             <a class="nav-link text-nowrap" href="index.php?act=shop">Cửa hàng</a>
                                         </li>
                                         <li class="nav-item dropdown dropdown-fullwidth me-0 me-lg-2">
@@ -437,7 +397,6 @@
                                                         <h6 class="text-primary ps-3">Cửa hàng</h6>
                                                         <a class="dropdown-item" href="index.php?act=shop">Danh sách sản phẩm</a>
                                                         <a class="dropdown-item" href="index.php?act=shop-single">Chi tiết sản phẩm</a>
-                                                        <a class="dropdown-item" href="index.php?act=wishlist">Yêu thích</a>
                                                         <a class="dropdown-item" href="index.php?act=cart">Giỏ hàng</a>
                                                         <a class="dropdown-item" href="index.php?act=checkout">Thanh toán</a>
                                                     </div>
@@ -474,5 +433,18 @@
 </header>
 <!-- Header Section End -->
 
-<!-- Header Section End -->
+<!-- Product Quick View Modal -->
+<div class="modal fade" id="productQuickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 8px; overflow: hidden;">
+            <div class="modal-header border-0 pb-0 justify-content-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="padding: 1rem;"></button>
+            </div>
+            <div class="modal-body p-4 pt-0" id="quickViewModalBody">
+                <!-- Content loaded dynamically via JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
 
